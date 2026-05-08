@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Hunter Blade — Panel del Barbero</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0a0a0a;
+    --surface:  #141414;
+    --border:   #222;
+    --gold:     #c9a84c;
+    --gold-dim: #7a6230;
+    --white:    #f0ede6;
+    --gray:     #666;
+    --green:    #2d6a4f;
+    --green-lt: #52b788;
+    --red:      #9b2226;
+    --red-lt:   #e63946;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    color: var(--gold);
+  }
+  .logo span { color: var(--white); }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green-lt);
+    box-shadow: 0 0 8px var(--green-lt);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* SEARCH */
+  .search-section {
+    padding: 20px 20px 0;
+  }
+  .search-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 10px;
+  }
+  .search-row {
+    display: flex;
+    gap: 8px;
+  }
+  input[type="tel"] {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 14px 16px;
+    font-size: 16px;
+    font-family: 'DM Sans', sans-serif;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="tel"]:focus { border-color: var(--gold); }
+  input[type="tel"]::placeholder { color: var(--gray); }
+
+  .btn-search {
+    background: var(--gold);
+    color: #000;
+    border: none;
+    padding: 14px 18px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 1px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-search:active { opacity: 0.8; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gray);
+  }
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.3;
+  }
+  .empty-state p { font-size: 14px; line-height: 1.6; }
+
+  /* CLIENT CARD */
+  .client-card {
+    margin: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    display: none;
+  }
+  .client-card.visible { display: block; animation: slideUp 0.3s ease; }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .client-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--white);
+  }
+  .client-phone {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 2px;
+  }
+  .nivel-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: var(--gold-dim);
+    color: var(--gold);
+    border: 1px solid var(--gold-dim);
+  }
+
+  /* STAMPS */
+  .stamps-section {
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .stamps-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 14px;
+  }
+  .stamps-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .stamp {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--gray);
+    transition: all 0.2s;
+  }
+  .stamp.filled {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .stamp.reward {
+    background: var(--green);
+    border-color: var(--green-lt);
+    color: var(--green-lt);
+    font-size: 14px;
+  }
+  .stamp.reward-2 {
+    background: #4a1942;
+    border-color: #c77dff;
+    color: #c77dff;
+    font-size: 14px;
+  }
+
+  .stamps-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .stamps-count {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .stamps-count span {
+    font-size: 14px;
+    color: var(--gray);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+  }
+  .next-reward {
+    font-size: 12px;
+    color: var(--gray);
+    text-align: right;
+  }
+  .next-reward strong { color: var(--white); display: block; }
+
+  /* REWARD BANNER */
+  .reward-banner {
+    margin: 0 20px 0;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #1a3a2a, #0d2018);
+    border: 1px solid var(--green-lt);
+    border-radius: 10px;
+    display: none;
+  }
+  .reward-banner.visible { display: flex; align-items: center; gap: 12px; }
+  .reward-banner.purple {
+    background: linear-gradient(135deg, #2a1a3a, #180d20);
+    border-color: #c77dff;
+  }
+  .reward-icon { font-size: 24px; }
+  .reward-text { flex: 1; }
+  .reward-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--green-lt);
+  }
+  .reward-banner.purple .reward-title { color: #c77dff; }
+  .reward-subtitle { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .btn-canjear {
+    background: var(--green-lt);
+    color: #000;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+  .reward-banner.purple .btn-canjear { background: #c77dff; }
+  .btn-canjear:active { opacity: 0.8; }
+
+  /* SERVICE SELECTOR */
+  .service-section {
+    padding: 20px;
+  }
+  .service-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 12px;
+  }
+  .service-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .service-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 14px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+  }
+  .service-btn:active { opacity: 0.7; }
+  .service-btn.selected {
+    border-color: var(--gold);
+    background: #1a1608;
+  }
+  .service-btn-name { font-size: 13px; font-weight: 500; }
+  .service-btn-price { font-size: 12px; color: var(--gold); margin-top: 4px; }
+
+  .btn-registrar {
+    width: 100%;
+    background: var(--gold);
+    color: #000;
+    border: none;
+    padding: 16px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-registrar:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  .btn-registrar:not(:disabled):active { opacity: 0.8; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: transform 0.3s ease;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--green-lt); }
+  .toast.error { border-color: var(--red-lt); }
+
+  /* LOADING */
+  .loading {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* HISTORY */
+  .history-section {
+    padding: 0 20px 20px;
+  }
+  .history-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 10px;
+  }
+  .history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .history-item:last-child { border-bottom: none; }
+  .history-sello {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--gold-dim);
+    color: var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .history-info { flex: 1; padding: 0 12px; }
+  .history-servicio { font-size: 13px; font-weight: 500; }
+  .history-fecha { font-size: 11px; color: var(--gray); margin-top: 2px; }
+  .history-monto { font-size: 13px; color: var(--gold); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">HUNTER <span>BLADE</span></div>
+  <div class="status-dot"></div>
+</header>
+
+<div class="search-section">
+  <div class="search-label">Buscar cliente</div>
+  <div class="search-row">
+    <input type="tel" id="phoneInput" placeholder="Teléfono del cliente" maxlength="15">
+    <button class="btn-search" onclick="buscarCliente()">BUSCAR</button>
+  </div>
+</div>
+
+<div class="empty-state" id="emptyState">
+  <div class="empty-icon">✂</div>
+  <p>Ingresa el teléfono del cliente<br>para ver sus sellos</p>
+</div>
+
+<div class="client-card" id="clientCard">
+  <div class="card-header">
+    <div>
+      <div class="client-name" id="clientName">—</div>
+      <div class="client-phone" id="clientPhone">—</div>
+    </div>
+    <div class="nivel-badge" id="clientNivel">Nuevo</div>
+  </div>
+
+  <div class="stamps-section">
+    <div class="stamps-label">Sellos acumulados</div>
+    <div class="stamps-grid" id="stampsGrid"></div>
+    <div class="stamps-info">
+      <div>
+        <div class="stamps-count" id="stampsCount">0 <span>/ 11</span></div>
+      </div>
+      <div class="next-reward" id="nextRewardInfo"></div>
+    </div>
+  </div>
+
+  <div class="reward-banner" id="rewardBanner">
+    <div class="reward-icon">🎁</div>
+    <div class="reward-text">
+      <div class="reward-title" id="rewardTitle">Recompensa disponible</div>
+      <div class="reward-subtitle" id="rewardSubtitle"></div>
+    </div>
+    <button class="btn-canjear" id="btnCanjear" onclick="aplicarCanje()">CANJEAR</button>
+  </div>
+
+  <div class="service-section">
+    <div class="service-label">Registrar visita</div>
+    <div class="service-grid" id="serviceGrid"></div>
+    <button class="btn-registrar" id="btnRegistrar" disabled onclick="registrarVisita()">
+      REGISTRAR VISITA
+    </button>
+  </div>
+
+  <div class="history-section">
+    <div class="history-label">Últimas visitas</div>
+    <div id="historialList"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── CONFIGURACIÓN ───────────────────────────────────────────────
+const API = 'https://hunterblade-backend-production.up.railway.app';
+
+const SERVICIOS = [
+  { id: 'c98fcba5-27d6-46ee-b0c7-2c8b2b63f77c', nombre: 'Corte de cabello', precio: '$180' },
+  { id: 'c0114768-149b-4f96-82b8-d28ef554b949', nombre: 'Corte de niño',    precio: '$150' },
+  { id: 'b9f4fb52-a20f-4a1e-aaad-a8467476a559', nombre: 'Arreglo de barba', precio: '$120' },
+  { id: '42c2d322-e81e-4871-abd2-271551f9fceb', nombre: 'Corte + Barba',    precio: '$280' },
+];
+
+const SUCURSAL_ID = '4136bcb4-1a58-4fd7-b8c7-f3e54bf533d5';
+
+// ─── STATE ───────────────────────────────────────────────────────
+let state = {
+  cliente: null,
+  sellos: null,
+  recompensa: null,
+  servicioSeleccionado: null,
+  canjeId: null,
+};
+
+// ─── BUSCAR CLIENTE ──────────────────────────────────────────────
+async function buscarCliente() {
+  const tel = document.getElementById('phoneInput').value.trim();
+  if (!tel) return showToast('Ingresa un número de teléfono', 'error');
+
+  const btn = document.querySelector('.btn-search');
+  btn.innerHTML = '<span class="loading"></span>';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${API}/api/clientes/tel/${tel}`);
+    const data = await res.json();
+
+    if (!res.ok) {
+      showToast('Cliente no encontrado — regístralo primero', 'error');
+      document.getElementById('clientCard').classList.remove('visible');
+      document.getElementById('emptyState').style.display = 'block';
+      return;
+    }
+
+    state.cliente = data.cliente;
+    state.sellos  = data.sellos;
+    state.recompensa = data.recompensa_disponible;
+
+    renderCliente(data);
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('clientCard').classList.add('visible');
+
+  } catch(e) {
+    showToast('Error de conexión', 'error');
+  } finally {
+    btn.innerHTML = 'BUSCAR';
+    btn.disabled = false;
+  }
+}
+
+// ─── RENDER CLIENTE ──────────────────────────────────────────────
+function renderCliente(data) {
+  const { cliente, sellos, recompensa_disponible, historial } = data;
+
+  document.getElementById('clientName').textContent = cliente.nombre;
+  document.getElementById('clientPhone').textContent = cliente.telefono;
+
+  const actuales = sellos.caducado ? 0 : (sellos.actuales || 0);
+
+  // Sellos grid
+  const grid = document.getElementById('stampsGrid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= 11; i++) {
+    const s = document.createElement('div');
+    s.className = 'stamp';
+    if (i === 7) {
+      s.className += actuales >= 7 ? ' reward' : '';
+      s.textContent = actuales >= 7 ? '★' : '7';
+    } else if (i === 11) {
+      s.className += actuales >= 11 ? ' reward-2' : '';
+      s.textContent = actuales >= 11 ? '★' : '11';
+    } else {
+      if (i <= actuales) s.className += ' filled';
+      s.textContent = i;
+    }
+    grid.appendChild(s);
+  }
+
+  document.getElementById('stampsCount').innerHTML = `${actuales} <span>/ 11</span>`;
+
+  // Próximo umbral
+  const nextEl = document.getElementById('nextRewardInfo');
+  if (sellos.proximo_umbral) {
+    nextEl.innerHTML = `<strong>${sellos.proximo_umbral.descripcion}</strong>Faltan ${sellos.proximo_umbral.faltan} visita${sellos.proximo_umbral.faltan !== 1 ? 's' : ''}`;
+  } else {
+    nextEl.innerHTML = '';
+  }
+
+  // Recompensa disponible
+  const banner = document.getElementById('rewardBanner');
+  if (recompensa_disponible) {
+    state.canjeId = recompensa_disponible.id;
+    banner.className = 'reward-banner visible' + (recompensa_disponible.tipo_recompensa === 'paquete_gratis' ? ' purple' : '');
+    document.getElementById('rewardTitle').textContent = recompensa_disponible.descripcion;
+    document.getElementById('rewardSubtitle').textContent = `Valor: $${recompensa_disponible.monto_valor} • Toca para aplicar`;
+    document.getElementById('btnCanjear').style.background = recompensa_disponible.tipo_recompensa === 'paquete_gratis' ? '#c77dff' : '';
+  } else {
+    banner.className = 'reward-banner';
+    state.canjeId = null;
+  }
+
+  // Servicios
+  renderServicios();
+
+  // Historial
+  const hist = document.getElementById('historialList');
+  if (historial && historial.length > 0) {
+    hist.innerHTML = historial.slice(0,5).map(v => `
+      <div class="history-item">
+        <div class="history-sello">${v.numero_sello}</div>
+        <div class="history-info">
+          <div class="history-servicio">${v.servicio}</div>
+          <div class="history-fecha">${formatFecha(v.fecha)}</div>
+        </div>
+        <div class="history-monto">${v.es_canje ? '🎁 Gratis' : ''}</div>
+      </div>
+    `).join('');
+  } else {
+    hist.innerHTML = '<div style="color:var(--gray);font-size:13px;padding:10px 0">Sin visitas registradas</div>';
+  }
+}
+
+function renderServicios() {
+  const grid = document.getElementById('serviceGrid');
+  grid.innerHTML = SERVICIOS.map(s => `
+    <button class="service-btn ${state.servicioSeleccionado === s.id ? 'selected' : ''}"
+            onclick="seleccionarServicio('${s.id}')">
+      <div class="service-btn-name">${s.nombre}</div>
+      <div class="service-btn-price">${s.precio}</div>
+    </button>
+  `).join('');
+}
+
+function seleccionarServicio(id) {
+  state.servicioSeleccionado = id;
+  renderServicios();
+  document.getElementById('btnRegistrar').disabled = false;
+}
+
+// ─── REGISTRAR VISITA ────────────────────────────────────────────
+async function registrarVisita() {
+  if (!state.servicioSeleccionado) return;
+
+  const btn = document.getElementById('btnRegistrar');
+  btn.innerHTML = '<span class="loading"></span> REGISTRANDO...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${API}/api/visitas`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        cliente_id:  state.cliente.id,
+        sucursal_id: SUCURSAL_ID,
+        servicio_id: state.servicioSeleccionado,
+      })
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error);
+
+    const sello = data.sellos_actuales;
+    let msg = `✓ Sello #${sello} registrado`;
+    if (data.recompensa_generada) {
+      msg = `🎁 ¡Sello #${sello}! ${data.recompensa_generada.descripcion}`;
+    }
+    showToast(msg, 'success');
+    state.servicioSeleccionado = null;
+
+    // Refrescar
+    setTimeout(() => buscarClientePorId(state.cliente.id), 600);
+
+  } catch(e) {
+    showToast(e.message || 'Error al registrar', 'error');
+    btn.disabled = false;
+  } finally {
+    btn.innerHTML = 'REGISTRAR VISITA';
+  }
+}
+
+// ─── APLICAR CANJE ───────────────────────────────────────────────
+async function aplicarCanje() {
+  if (!state.canjeId) return;
+
+  const btn = document.getElementById('btnCanjear');
+  btn.textContent = '...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${API}/api/canjes/${state.canjeId}/aplicar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sucursal_id: SUCURSAL_ID })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    showToast('🎁 Recompensa aplicada correctamente', 'success');
+    setTimeout(() => buscarClientePorId(state.cliente.id), 600);
+
+  } catch(e) {
+    showToast(e.message || 'Error al canjear', 'error');
+  } finally {
+    btn.textContent = 'CANJEAR';
+    btn.disabled = false;
+  }
+}
+
+async function buscarClientePorId(id) {
+  const tel = document.getElementById('phoneInput').value.trim();
+  if (tel) await buscarCliente();
+}
+
+// ─── HELPERS ────────────────────────────────────────────────────
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function formatFecha(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+// Enter en el input
+document.getElementById('phoneInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') buscarCliente();
+});
+</script>
+</body>
+</html>
